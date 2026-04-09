@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El universo de Aby ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Grotesk:wght@300;400;500&family=Dancing+Script:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root{--deep:#05050f;--star:#ffffff;--rose:#e8a0b4;--lavender:#b8a9e0;--aqua:#7ecfc8;--gold:#f5d78e;--pink:#f472b6;--dim:rgba(255,255,255,.55);--dimmer:rgba(255,255,255,.25);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}     
+body{background:var(--deep);color:var(--star);font-family:'Space Grotesk',sans-serif;overflow-x:hidden;cursor:none;}
+#cursor{position:fixed;width:12px;height:12px;border-radius:50%;background:var(--gold);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s;box-shadow:0 0 12px var(--gold);}
+#cursor.big{width:28px;height:28px;background:var(--rose);box-shadow:0 0 20px var(--rose);}   
+#starCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+#fwCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:998;pointer-events:none;}
+#hearts-container{position:fixed;inset:0;pointer-events:none;z-index:997;}
+.floating-heart{position:absolute;pointer-events:none;animation:floatUp 2.5s ease-out forwards;}
+@keyframes floatUp{0%{transform:translateY(0) scale(0) rotate(-10deg);opacity:1;}20%{transform:translateY(-40px) scale(1.2) rotate(5deg);opacity:1;}100%{transform:translateY(-200px) scale(.5) rotate(20deg);opacity:0;}}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:center;gap:1.4rem;flex-wrap:wrap;padding:1.1rem 2rem;background:linear-gradient(to bottom,rgba(5,5,15,.92),transparent);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;}
+nav a{color:var(--dimmer);text-decoration:none;transition:color .3s;}
+nav a:hover{color:var(--gold);}
+section{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7rem 2rem 5rem;}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--rose);letter-spacing:.2em;margin-bottom:1rem;opacity:0;animation:fadeUp .8s .4s forwards;}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3.4rem,10vw,7.5rem);font-weight:300;line-height:1;text-align:center;opacity:0;animation:fadeUp .9s .6s forwards;}
+.hero-title span{color:var(--gold);}
+.hero-desc{max-width:540px;text-align:center;color:var(--dim);font-size:.95rem;line-height:1.8;margin-top:1.5rem;opacity:0;animation:fadeUp .9s .9s forwards;}
+.hero-note{margin-top:2.5rem;font-family:'Dancing Script',cursive;font-size:1.4rem;color:var(--rose);opacity:0;animation:fadeUp .9s 1.2s forwards;}
+.scroll-hint{position:absolute;bottom:2.5rem;font-size:.7rem;letter-spacing:.2em;color:var(--dimmer);animation:pulse 2s infinite;}
+.section-label{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--aqua);margin-bottom:.5rem;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:300;text-align:center;margin-bottom:.6rem;}
+.section-title span{color:var(--gold);}
+.section-divider{width:60px;height:2px;background:linear-gradient(to right,var(--rose),var(--lavender));margin:.4rem auto 2rem;border-radius:2px;}
+.section-sub{color:var(--dim);font-size:.9rem;text-align:center;max-width:480px;margin-bottom:2.5rem;line-height:1.7;}
+ 
+/* PIANO — polyphonic */
+.piano{display:flex;position:relative;height:160px;margin:0 auto;user-select:none;touch-action:none;}
+.wkey{width:44px;height:150px;background:#f0ece0;border:1px solid #bbb;border-radius:0 0 6px 6px;position:relative;cursor:pointer;transition:background .06s,transform .06s;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;-webkit-tap-highlight-color:transparent;}
+.wkey:hover{background:#fff;}.wkey.pressed{background:#e0d8c8;transform:scaleY(.97);}
+.wkey span{font-size:.6rem;color:#999;}
+.bkey{width:26px;height:95px;background:#1a1a2e;border-radius:0 0 4px 4px;position:absolute;top:0;z-index:2;cursor:pointer;transition:background .06s,transform .06s;border:1px solid #333;-webkit-tap-highlight-color:transparent;}
+.bkey:hover{background:#2d2d4a;}.bkey.pressed{background:#111;transform:scaleY(.97);}
+.note-bubble{position:fixed;pointer-events:none;font-size:1.5rem;z-index:50;animation:noteFly 1.2s ease-out forwards;}
+@keyframes noteFly{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-90px) scale(1.6);}}
+ 
+/* UNIVERSE */
+.universe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.2rem;width:100%;max-width:880px;}
+.u-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.4rem 1rem;text-align:center;cursor:pointer;transition:transform .25s,background .25s,border-color .25s;position:relative;overflow:hidden;}
+.u-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,var(--glow,transparent) 0%,transparent 70%);opacity:0;transition:opacity .3s;}
+.u-card:hover::before{opacity:1;}
+.u-card:hover{transform:translateY(-6px) scale(1.03);border-color:rgba(255,255,255,.2);}
+.u-card .icon{font-size:2.4rem;display:block;margin-bottom:.6rem;}
+.u-card .label{font-size:.78rem;color:var(--dim);letter-spacing:.08em;}
+.u-card .name{font-size:1rem;font-weight:500;margin:.3rem 0 0;}
+.u-card .tap-hint{font-size:.68rem;color:var(--dimmer);margin-top:.5rem;}
+ 
+/* U-MODAL */
+#uModal{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:rgba(5,5,15,.85);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s;}
+#uModal.open{opacity:1;pointer-events:all;}
+.modal-inner{background:#0e0c24;border:1px solid rgba(184,169,224,.3);border-radius:20px;padding:2.5rem 2.2rem;max-width:500px;width:100%;position:relative;transform:translateY(18px) scale(.97);transition:transform .35s cubic-bezier(.22,1,.36,1);box-shadow:0 0 60px rgba(184,169,224,.12);text-align:center;max-height:80vh;overflow-y:auto;}
+#uModal.open .modal-inner{transform:translateY(0) scale(1);}
+.modal-icon{font-size:2.2rem;margin-bottom:.5rem;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--rose);margin-bottom:1.2rem;}
+.modal-body{font-size:.96rem;line-height:1.9;color:rgba(255,255,255,.82);white-space:pre-wrap;text-align:center;}
+.modal-close{margin-top:1.8rem;background:rgba(184,169,224,.12);border:1px solid rgba(184,169,224,.3);border-radius:30px;padding:.55rem 1.8rem;color:var(--lavender);font-size:.82rem;letter-spacing:.1em;cursor:pointer;transition:all .2s;}
+.modal-close:hover{background:rgba(184,169,224,.25);color:var(--star);}
+ 
+/* QUIEN ERES */
+#quien-section,#anime-section,#words-section,#story-section,#galaxy-section{align-items:flex-start;padding-left:clamp(1.5rem,6vw,6rem);padding-right:clamp(1.5rem,6vw,6rem);}
+.big-header{width:100%;max-width:960px;margin-bottom:2rem;}
+.big-num{font-size:.75rem;letter-spacing:.2em;color:var(--aqua);margin-bottom:.3rem;font-family:'Space Grotesk',sans-serif;}
+.big-num.rose{color:var(--rose);}
+.big-title{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,6vw,5rem);font-weight:700;line-height:1.1;}
+.big-title::after{content:'';display:block;width:80px;height:3px;background:var(--pink);margin-top:.5rem;border-radius:2px;}
+.quien-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;width:100%;max-width:960px;}
+.quien-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:1.8rem 1.5rem;transition:transform .25s,border-color .25s;}
+.quien-card:hover{transform:translateY(-4px);border-color:rgba(244,114,182,.25);}
+.quien-card .q-icon{font-size:2.2rem;margin-bottom:1rem;display:block;}
+.quien-card .q-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;margin-bottom:.6rem;}
+.quien-card .q-desc{font-size:.88rem;color:rgba(255,255,255,.62);line-height:1.75;}
+ 
+/* VIDEO DEDICATION */
+#yliaSection{gap:1.5rem;background:linear-gradient(180deg,rgba(5,5,15,0) 0%,rgba(14,8,32,.6) 50%,rgba(5,5,15,0) 100%);}
+.ylia-wrap{width:100%;max-width:720px;}
+.ylia-label{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--rose);margin-bottom:.5rem;text-align:center;}
+.ylia-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:300;text-align:center;margin-bottom:.4rem;}
+.ylia-title span{color:var(--gold);font-style:italic;}
+.ylia-divider{width:60px;height:2px;background:linear-gradient(to right,var(--rose),var(--lavender));margin:.5rem auto 2rem;border-radius:2px;}
+.ylia-video-box{width:100%;border-radius:16px;overflow:hidden;border:1px solid rgba(232,160,180,.25);box-shadow:0 0 40px rgba(232,160,180,.12);background:#000;position:relative;}
+.ylia-video-box video{width:100%;display:block;max-height:450px;object-fit:cover;}
+.ylia-upload-hint{text-align:center;margin-top:1rem;font-size:.8rem;color:var(--dimmer);}
+.ylia-upload-hint label{color:var(--rose);cursor:pointer;border-bottom:1px solid rgba(232,160,180,.35);padding-bottom:1px;}
+.ylia-upload-hint label:hover{color:var(--star);}
+#yliaFileInput{display:none;}
+.ylia-dedication{margin-top:2rem;background:rgba(255,255,255,.03);border:1px solid rgba(232,160,180,.12);border-radius:14px;padding:2rem 2.2rem;}
+.ylia-ded-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--rose);font-style:italic;margin-bottom:1rem;text-align:center;}
+.ylia-ded-text{font-family:'Playfair Display',serif;font-size:.95rem;line-height:2;color:rgba(255,255,255,.78);}
+ 
+/* ANIME CARDS */
+.anime-cards{display:flex;flex-direction:column;gap:1.4rem;width:100%;max-width:960px;}
+.anime-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:2rem 2.2rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;}
+@media(max-width:640px){.anime-card{grid-template-columns:1fr;}}
+.anime-quote-text{font-family:'Playfair Display',serif;font-size:1.15rem;font-style:italic;line-height:1.6;color:var(--rose);}
+.anime-quote-em{color:var(--star);font-style:normal;}
+.anime-source{font-size:.78rem;color:var(--dimmer);margin-top:.6rem;letter-spacing:.06em;}
+.anime-desc-p{font-size:.88rem;color:rgba(255,255,255,.62);line-height:1.75;}
+.anime-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem;}
+.a-tag{font-size:.72rem;padding:.3rem .8rem;border-radius:20px;background:rgba(232,160,180,.12);border:1px solid rgba(232,160,180,.25);color:var(--rose);}
+ 
+/* WORDS */
+.words-list{display:flex;flex-direction:column;gap:1rem;width:100%;max-width:800px;}
+.word-item{background:rgba(255,255,255,.04);border-left:3px solid var(--aqua);border-radius:0 12px 12px 0;padding:1.4rem 1.8rem;}
+.word-item.rb{border-left-color:var(--rose);}.word-item.gb{border-left-color:var(--gold);}.word-item.lb{border-left-color:var(--lavender);}
+.word-q{font-family:'Playfair Display',serif;font-style:italic;font-size:1.05rem;line-height:1.65;color:var(--star);}
+.word-attr{font-size:.78rem;color:var(--aqua);margin-top:.5rem;letter-spacing:.06em;}
+.word-item.rb .word-attr{color:var(--rose);}.word-item.gb .word-attr{color:var(--gold);}.word-item.lb .word-attr{color:var(--lavender);}
+ 
+/* JOURNAL */
+#journal-section{gap:1.5rem;}
+.journal-box{width:100%;max-width:600px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:2.5rem;}
+.mood-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.mood-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:.4rem 1rem;color:var(--dim);font-size:.82rem;cursor:pointer;transition:all .2s;}
+.mood-btn:hover,.mood-btn.active{background:rgba(232,160,180,.18);border-color:var(--rose);color:var(--star);}
+.journal-textarea{width:100%;min-height:140px;resize:none;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:1rem;color:var(--star);font-family:'Space Grotesk',sans-serif;font-size:.92rem;line-height:1.75;outline:none;}
+.journal-textarea::placeholder{color:var(--dimmer);}.journal-textarea:focus{border-color:rgba(184,169,224,.4);}
+.msg-display{margin-top:1rem;min-height:2.5rem;font-family:'Dancing Script',cursive;font-size:1.2rem;color:var(--rose);text-align:center;opacity:0;transition:opacity .5s;}
+.msg-display.visible{opacity:1;}
+/* mood video */
+.mood-video-box{margin-top:1rem;width:100%;border-radius:12px;overflow:hidden;border:1px solid rgba(232,160,180,.18);display:none;background:#000;}
+.mood-video-box.show{display:block;}
+.mood-video-box video{width:100%;display:block;max-height:280px;object-fit:cover;}
+.mood-video-upload{text-align:center;padding:.6rem;font-size:.76rem;color:var(--dimmer);}
+.mood-video-upload label{color:var(--lavender);cursor:pointer;border-bottom:1px solid rgba(184,169,224,.3);padding-bottom:1px;}
+.mood-video-upload label:hover{color:var(--star);}
+.journal-btns{display:flex;gap:.8rem;margin-top:1rem;flex-wrap:wrap;}
+.save-btn{flex:1;min-width:140px;background:rgba(232,160,180,.15);border:1px solid rgba(232,160,180,.35);border-radius:8px;padding:.7rem;color:var(--rose);font-size:.85rem;cursor:pointer;letter-spacing:.08em;transition:all .2s;}
+.save-btn:hover{background:rgba(232,160,180,.28);}
+.read-btn{flex:1;min-width:140px;background:rgba(126,207,200,.1);border:1px solid rgba(126,207,200,.3);border-radius:8px;padding:.7rem;color:var(--aqua);font-size:.85rem;cursor:pointer;letter-spacing:.08em;transition:all .2s;}
+.read-btn:hover{background:rgba(126,207,200,.22);}
+ 
+/* JOURNAL MODAL */
+#journalModal{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:rgba(5,5,15,.88);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s;}
+#journalModal.open{opacity:1;pointer-events:all;}
+.jm-inner{background:#0d0b22;border:1px solid rgba(126,207,200,.25);border-radius:20px;padding:2rem 2.2rem;max-width:560px;width:100%;max-height:80vh;overflow-y:auto;transform:translateY(18px);transition:transform .35s cubic-bezier(.22,1,.36,1);}
+#journalModal.open .jm-inner{transform:translateY(0);}
+.jm-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--aqua);margin-bottom:1.4rem;text-align:center;}
+.j-entry{background:rgba(255,255,255,.04);border-left:3px solid var(--rose);border-radius:0 10px 10px 0;padding:1rem 1.2rem;margin-bottom:.9rem;}
+.j-entry-header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.3rem;margin-bottom:.5rem;font-size:.75rem;color:var(--dimmer);}
+.j-entry-mood{color:var(--rose);}
+.j-entry-text{font-size:.9rem;line-height:1.7;color:rgba(255,255,255,.8);}
+.jm-empty{text-align:center;color:var(--dimmer);padding:2rem 0;font-family:'Dancing Script',cursive;font-size:1.1rem;}
+.jm-close{display:block;margin:1.5rem auto 0;background:rgba(126,207,200,.1);border:1px solid rgba(126,207,200,.3);border-radius:30px;padding:.5rem 1.8rem;color:var(--aqua);font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:.1em;}
+.jm-close:hover{background:rgba(126,207,200,.22);}
+ 
+/* HINT */
+.hint-card{max-width:520px;text-align:center;border:1px solid rgba(245,215,142,.2);background:rgba(245,215,142,.05);border-radius:20px;padding:3rem 2.5rem;}
+.hint-star{font-size:2rem;margin-bottom:1rem;}
+.hint-text{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:300;font-style:italic;line-height:1.75;color:var(--gold);}
+.hint-text span{color:var(--rose);}
+.hint-small{margin-top:1.5rem;font-size:.85rem;color:var(--dimmer);line-height:1.7;}
+
+
+ 
+/* STORY */
+.story-anime-img{width:100%;max-width:720px;border-radius:16px;overflow:hidden;margin-bottom:2rem;opacity:0;transform:translateY(18px);transition:opacity .8s,transform .8s;border:1px solid rgba(232,160,180,.2);box-shadow:0 0 40px rgba(232,160,180,.1);}
+.story-anime-img.vis{opacity:1;transform:translateY(0);}
+.story-anime-img img{width:100%;display:block;}
+.story-box{max-width:720px;width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(232,160,180,.12);border-radius:16px;padding:2.5rem 2.8rem;}
+.story-para{font-family:'Playfair Display',serif;font-size:1.02rem;line-height:1.95;color:rgba(255,255,255,.82);margin-bottom:1.4rem;opacity:0;transform:translateY(12px);transition:opacity .7s,transform .7s;}
+.story-para.vis{opacity:1;transform:translateY(0);}
+.story-para:last-child{margin-bottom:0;}
+.story-end-note{font-family:'Dancing Script',cursive;font-size:1.3rem;color:var(--rose);text-align:center;margin-top:1.5rem;opacity:0;transition:opacity .8s;}
+.story-end-note.vis{opacity:1;}
+.oath-btn{display:none;margin:2rem auto 0;background:linear-gradient(135deg,rgba(232,160,180,.18),rgba(184,169,224,.18));border:1px solid rgba(232,160,180,.4);border-radius:30px;padding:.85rem 2.5rem;color:var(--rose);font-size:.9rem;letter-spacing:.1em;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .3s;}
+.oath-btn:hover{background:linear-gradient(135deg,rgba(232,160,180,.32),rgba(184,169,224,.32));transform:scale(1.03);}
+.oath-btn.show{display:block;}
+ 
+/* OATH MODAL */
+#oathModal{position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:rgba(5,5,15,.93);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .4s;}
+#oathModal.open{opacity:1;pointer-events:all;}
+.oath-inner{background:linear-gradient(135deg,#0e0820,#100c2a);border:1px solid rgba(232,160,180,.35);border-radius:24px;padding:3rem 2.8rem;max-width:580px;width:100%;text-align:center;transform:scale(.95);transition:transform .4s cubic-bezier(.22,1,.36,1);max-height:85vh;overflow-y:auto;}
+#oathModal.open .oath-inner{transform:scale(1);}
+.oath-top{font-size:2.2rem;margin-bottom:.8rem;}
+.oath-title{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-style:italic;color:var(--rose);margin-bottom:1.8rem;letter-spacing:.06em;}
+.oath-text{font-family:'Playfair Display',serif;font-size:1rem;line-height:2;color:rgba(255,255,255,.88);text-align:left;}
+.oath-sign{margin-top:1.8rem;font-family:'Dancing Script',cursive;font-size:1.35rem;color:var(--lavender);text-align:center;}
+.oath-close{margin-top:1.8rem;background:rgba(232,160,180,.12);border:1px solid rgba(232,160,180,.3);border-radius:30px;padding:.5rem 1.8rem;color:var(--rose);font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:.1em;}
+.oath-close:hover{background:rgba(232,160,180,.25);}
+ 
+/* GALAXY SECTION */
+#galaxy-section{min-height:100vh;padding:0;overflow:hidden;}
+#galaxyFrame{width:100%;height:100vh;border:none;display:block;}
+
+/* RANDOM SECTION */
+#random-section{gap:2rem;}
+.random-wrap{width:100%;max-width:680px;}
+.random-label{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--lavender);margin-bottom:.5rem;text-align:center;}
+.random-title-el{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:300;text-align:center;margin-bottom:.4rem;color:var(--star);}
+.random-title-el span{color:var(--gold);font-style:italic;}
+.random-divider{width:60px;height:2px;background:linear-gradient(to right,var(--lavender),var(--aqua));margin:.5rem auto 1.8rem;border-radius:2px;}
+.random-video-box{width:100%;border-radius:16px;overflow:hidden;border:1px solid rgba(184,169,224,.25);box-shadow:0 0 40px rgba(184,169,224,.1);background:#000;min-height:60px;display:flex;align-items:center;justify-content:center;}
+.random-video-box video{width:100%;display:block;max-height:420px;object-fit:cover;}
+.random-placeholder{font-family:'Dancing Script',cursive;font-size:1.1rem;color:var(--dimmer);padding:2rem;text-align:center;}
+.random-btn{margin-top:1.4rem;display:block;width:100%;background:linear-gradient(135deg,rgba(184,169,224,.15),rgba(126,207,200,.12));border:1px solid rgba(184,169,224,.35);border-radius:30px;padding:.85rem 2rem;color:var(--lavender);font-size:.9rem;letter-spacing:.1em;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .3s;text-align:center;}
+.random-btn:hover{background:linear-gradient(135deg,rgba(184,169,224,.28),rgba(126,207,200,.22));transform:scale(1.02);}
+.random-upload-hint{text-align:center;margin-top:.8rem;font-size:.76rem;color:var(--dimmer);}
+/* ── FINAL SECTION ── */
+#final-section {
+  min-height: auto;
+  padding: 6rem 2rem 8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+.final-btn {
+  background: linear-gradient(135deg, rgba(232,160,180,.2), rgba(184,169,224,.2), rgba(245,215,142,.15));
+  border: 1px solid rgba(245,215,142,.5);
+  border-radius: 50px;
+  padding: 1.1rem 3rem;
+  color: var(--gold);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-style: italic;
+  letter-spacing: .08em;
+  cursor: pointer;
+  transition: all .4s;
+  box-shadow: 0 0 30px rgba(245,215,142,.1);
+  position: relative;
+  overflow: hidden;
+}
+.final-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(245,215,142,.15) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity .4s;
+}
+.final-btn:hover::before { opacity: 1; }
+.final-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 50px rgba(245,215,142,.25);
+  border-color: rgba(245,215,142,.8);
+}
+
+/* FINAL MODAL */
+#finalModal {
+  position: fixed; inset: 0; z-index: 700;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem;
+  background: rgba(5,5,15,.95);
+  backdrop-filter: blur(16px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .5s;
+}
+#finalModal.open { opacity: 1; pointer-events: all; }
+.final-modal-inner {
+  background: linear-gradient(135deg, #0a0820, #0e0c2a, #0a0818);
+  border: 1px solid rgba(245,215,142,.3);
+  border-radius: 28px;
+  padding: 3.5rem 3rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  transform: scale(.94) translateY(20px);
+  transition: transform .5s cubic-bezier(.22,1,.36,1);
+  box-shadow: 0 0 80px rgba(245,215,142,.08), 0 0 40px rgba(232,160,180,.08);
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+#finalModal.open .final-modal-inner { transform: scale(1) translateY(0); }
+.fm-stars { font-size: 1.6rem; letter-spacing: .5rem; margin-bottom: 1.2rem; display: block; }
+.fm-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--gold);
+  margin-bottom: .4rem;
+  line-height: 1.3;
+}
+.fm-divider { width: 50px; height: 1px; background: linear-gradient(to right, var(--rose), var(--gold), var(--lavender)); margin: 1rem auto 2rem; border-radius: 2px; }
+.fm-body {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(.9rem, 2.5vw, 1.05rem);
+  line-height: 2.1;
+  color: rgba(255,255,255,.88);
+  text-align: left;
+}
+.fm-body em { color: var(--rose); font-style: italic; }
+.fm-body strong { color: var(--gold); font-weight: 400; }
+.fm-sign {
+  margin-top: 2rem;
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.4rem;
+  color: var(--lavender);
+  text-align: center;
+}
+.fm-note {
+  margin-top: .5rem;
+  font-size: .8rem;
+  color: var(--dimmer);
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: .08em;
+  text-align: center;
+}
+.fm-close {
+  margin-top: 2rem;
+  background: rgba(245,215,142,.1);
+  border: 1px solid rgba(245,215,142,.3);
+  border-radius: 30px;
+  padding: .6rem 2rem;
+  color: var(--gold);
+  font-size: .82rem;
+  cursor: pointer;
+  transition: all .2s;
+  letter-spacing: .1em;
+}
+.fm-close:hover { background: rgba(245,215,142,.22); }
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:.3;}50%{opacity:.8;}}
+.fade-in{opacity:0;transform:translateY(18px);transition:opacity .7s,transform .7s;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--deep);}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
+
+/* ── RESPONSIVE MÓVIL / TABLET ── */
+@media(max-width:768px){
+  body { cursor: auto; }
+  #cursor { display: none; }
+  nav { gap: .6rem; font-size: .58rem; padding: .9rem 1rem; }
+  section { padding: 6rem 1.2rem 4rem; }
+  .hero-desc { font-size: .88rem; }
+  .hero-images-row { flex-direction: column; max-width: 100%; gap: .9rem; }
+  .hero-img-wrap { aspect-ratio: 4/3; }
+  .piano { overflow-x: auto; padding-bottom: .5rem; }
+  .wkey { width: 36px; }
+  .bkey { width: 22px; }
+  .universe-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .9rem; }
+  .quien-grid { grid-template-columns: 1fr; }
+  .anime-card { grid-template-columns: 1fr; padding: 1.4rem; }
+  .story-box, .oath-inner { padding: 1.8rem 1.4rem; }
+  .journal-box { padding: 1.5rem; }
+  .modal-inner, .jm-inner { padding: 1.8rem 1.4rem; }
+  .hint-card { padding: 2rem 1.5rem; }
+  .hint-text { font-size: 1.2rem; }
+  .final-btn { padding: .9rem 2rem; font-size: 1rem; }
+  .final-modal-inner { padding: 2.5rem 1.6rem; }
+  .fm-body { font-size: .9rem; line-height: 1.9; }
+  #quien-section, #anime-section, #words-section, #story-section { padding-left: 1.2rem; padding-right: 1.2rem; }
+  .ylia-ded-text { font-size: .88rem; }
+}
+@media(max-width:400px){
+  .hero-title { font-size: 3rem; }
+  nav { font-size: .52rem; gap: .4rem; }
+  .universe-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-images-row { gap: .6rem; }
+}
+</style>
+</head>
+<body>
+ 
+<div id="cursor"></div>
+<canvas id="starCanvas"></canvas>
+<canvas id="fwCanvas"></canvas>
+<div id="hearts-container"></div>
+ 
+<nav>
+  <a href="#hero">inicio</a>
+  <a href="#piano-section">piano</a>
+  <a href="#universe">universo</a>
+  <a href="#quien-section">quién eres</a>
+  <a href="#yliaSection">dedicatoria</a>
+  <a href="#anime-section">anime</a>
+  <a href="#words-section">palabras</a>
+  <a href="#journal-section">diario</a>
+  <a href="#random-section">random</a>
+  <a href="#story-section">historia</a>
+</nav>
+ 
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-sub">Para Alguien Muy Especial</p>
+  <h1 class="hero-title">El Universo<br>De <span>Aby</span></h1>
+  <p class="hero-desc">Este espacio es tuyo. Creado para ti, con todo lo que te hace brillar.  Cada vez que entres aquí, quiero que sepas bueno mas bien que recuerdes que tienes a alguien que piensa en ti 
+    todo el tiempo y en lo increíble que eres, queria hacerte una especie de regalo y bueno puede que no sea mucho, pero te doy algo de lo que mejor se hacer y lo comparto contigo, Esto es para que veas lo que siento por ti lo que veo en ti miralo como una especie de reflejo, eres alguien que todos deberian tener en su vida pero el hecho de que estes en la mia es un regalo increible. La verdad en estos tiempos es imposible casi imposible encontrar a alguien que en verdad valga la pena y tu eres esa excepcion esa persona que sabe alegrar mis dias y que agradezco cada dia por haber encontrado. 💕</p>
+  <p class="hero-note">~ este lugar existe porque tú existes ~</p>
+  <p class="scroll-hint">↓ explora tu universo ↓</p>
+  
+  <!-- GIF + IMAGES -->
+  <div style="margin-top:2rem;display:flex;flex-direction:column;align-items:center;gap:1.4rem;width:100%;max-width:720px;">
+    <div style="border-radius:16px;overflow:hidden;border:1px solid rgba(184,169,224,.25);box-shadow:0 0 30px rgba(184,169,224,.1);">
+      <img src="animesher.com_sword-art-online-kirito-gif-1655327.gif" alt="Kirito gif" style="width:100%;max-width:480px;display:block;">
+    </div>
+</section>
+ 
+<!-- PIANO -->
+<section id="piano-section">
+  <p class="section-label fade-in">para la chica que es capaz de hacer música con sus manos</p>
+  <h2 class="section-title fade-in">Tu <span>piano</span></h2>
+  <div class="section-divider fade-in"></div>
+  <p class="section-sub fade-in">Toca las teclas — Esto es como para que siempre tengas música cerca, aunque estés cansadita.</p>
+  <div class="piano fade-in" id="piano"></div>
+  <p style="margin-top:1.2rem;font-size:.78rem;color:var(--dimmer);text-align:center;">🎹 también tocas guitarra eléctrica, acústica y violín — más perfecta no puedes ser, mi bellísima Aby 😄 no había presupuesto para esos, pero por el momento te doy este mini piano que puedes llevar a donde sea, igual ahi se hace mini practica ajsjsajsa o anti estres.</p>
+</section>
+ 
+<div class="hero-images-row">
+  <div class="hero-img-wrap" style="display:flex; justify-content:center; width:100%; margin-top:1.5rem;">
+    <img 
+      src="Gemini_Generated_Image_88s2mj88s2mj88s2.png" 
+      alt="imagen 2" 
+      style="width:100%; max-width:700px; border-radius:16px; display:block; object-fit:cover;"
+    >
+  </div>
+</div>
+</section>
+
+
+
+<!-- UNIVERSE -->
+<section id="universe">
+  <p class="section-label fade-in">todo lo que eres</p>
+  <h2 class="section-title fade-in">Tu <span>universo</span></h2>
+  <div class="section-divider fade-in"></div>
+  <p class="section-sub fade-in">Toca cada cosa para descubrir un mensaje. Este mundo fue hecho pensando en ti.</p>
+  <div class="universe-grid" id="uGrid"></div>
+</section>
+ 
+<div style="display:flex; justify-content:center; margin-top:2rem; width:100%;">
+  <div style="max-width:480px; width:100%; border-radius:14px; overflow:hidden; border:1px solid rgba(232,160,180,.2); box-shadow:0 0 20px rgba(232,160,180,.08);">
+    <img 
+      src="Gemini_Generated_Image_v8uadfv8uadfv8ua.png" 
+      alt="imagen extra" 
+      style="width:100%; display:block;"
+    >
+  </div>
+</div>
+</section>
+
+<div id="uModal"><div class="modal-inner">
+  <div class="modal-icon" id="mIcon"></div>
+  <p class="modal-title" id="mTitle"></p>
+  <p class="modal-body" id="mBody"></p>
+  <button class="modal-close" id="mClose">× cerrar</button>
+</div></div>
+ 
+<!-- QUIEN ERES -->
+<section id="quien-section">
+  <div class="big-header fade-in">
+    <p class="big-num">// quién eres</p>
+    <h2 class="big-title">Quién eres</h2>
+  </div>
+  <div class="quien-grid" id="quienGrid"></div>
+</section>
+ 
+<!-- YLIA DEDICATION -->
+<section id="yliaSection">
+  <div class="ylia-wrap fade-in">
+    <p class="ylia-label">una dedicatoria especial para ti</p>
+    <h2 class="ylia-title">Your Lie in <span>April</span></h2>
+    <div class="ylia-divider"></div>
+    <div class="ylia-video-box" id="yliaVideoBox">
+      <video id="yliaVideo" controls preload="metadata">
+        <source src="■ Shigatsu wa Kimi no Uso Opening 1 _ Hikaru Nara - Goose house _ (Sub. Español - Romaji) ■.mp4" type="video/mp4">
+        Tu navegador no soporta video HTML5.
+      </video>
+    </div>
+    <div class="ylia-upload-hint">
+      Si el video no carga, <label for="yliaFileInput">selecciónalo desde tu carpeta</label> 📂
+      <input type="file" id="yliaFileInput" accept="video/*,audio/*">
+    </div>
+    <div class="ylia-dedication fade-in">
+      <p class="ylia-ded-title">🎹 Por qué te dedico esta intro, Aby</p>
+      <p class="ylia-ded-text">
+        Esta intro empieza un anime super lindo, la primera vez que lo escuche quede encantado, la melodia la voz, aunque claramente no entendia ni una palabra de lo que decia jasjajsaj pero luego decidi buscarlo con el significado.<br><br>
+        Asi que imagina mi sorpresa cuando vi la letra y yo no paraba de decir  uf esta intro es especial, el anime me lo recomendaste y fue absolutamente increible, no tengo palabras para describir lo mucho que me gusto e impacto, pero retomando jasjsaj me desvie un poco al ver el significado de esta cancion, tu fuiste la primera imagen que llego a mi mente, cada que suena esta intro me acuerdo de ti
+        y ahora que estoy viendola otra vez porque empezo abril imaginate todos los dias tu llegando a mi cabeza, jsajjas esta intro nunca la saltaria porque me gusta muchisimo y es asi como tu, no me cansaria de ti. — y bueno mira la verdad puedo tener miles de problemas, puedo estar estresado, enfermo pero nunca me cansaria, porque uno no se cansa de lo que ama como dice por ahi una frase, la música que no todo el mundo tiene. Kousei perdió su música por un tiempo y tambien su sentir, pero la encontró de nuevo gracias a alguien que entró a su vida y lo cambió todo.<br><br>
+        Muy familiar a lo que te he dicho ¿no? ya ves a lo que me refiero, por eso que lo diga tanto no es solo porque quiera repetir es porque es la verdad de lo que haces, y la verdad no se porque no lo notas, quisiera que lo vieras todo desde mi perspectiva entenderias mi sentir, <br><br>
+        Esta intro es para ti — para la chica que toca piano o bueno que estas aprendiendo pero es igual asjsja dejame, pero el punto es que no sabes cuánta belleza produce cuando lo haces.  Esto es para ti que al igual que Kaori, haces que el mundo se sienta más vivo cuando estás cerca.<br><br>
+        <em style="color:var(--rose)">Sigue tocando, Aby con todo el corazón, el mundo te necesita sonando, yo te necesito, y se que seras la mejor porque desde ahora ya lo eres entonces eso solo me deja que lo seras siempre.</em>
+      </p>
+    </div>
+  </div>
+</section>
+ 
+<!-- ANIME WORLD -->
+<section id="anime-section">
+  <div class="big-header fade-in">
+    <p class="big-num">// 04 — anime world</p>
+    <h2 class="big-title">Anime &amp; más 🎌</h2>
+  </div>
+  <div class="anime-cards" id="animeCards"></div>
+</section>
+ 
+<!-- WORDS FOR YOU -->
+<section id="words-section">
+  <div class="big-header fade-in" style="max-width:800px;">
+    <p class="big-num">// in your language</p>
+    <h2 class="big-title">Words for you ✍️</h2>
+  </div>
+  <div class="words-list" id="wordsList"></div>
+</section>
+ 
+<!-- JOURNAL -->
+<section id="journal-section">
+  <p class="section-label fade-in">solo tú</p>
+  <h2 class="section-title fade-in">Tu <span>diario</span></h2>
+  <div class="section-divider fade-in"></div>
+  <p class="section-sub fade-in">¿Cómo te sientes hoy? Este espacio es seguro, tranqui que es solo para ti.</p>
+  <div class="journal-box fade-in">
+    <div class="mood-row" id="moodRow"></div>
+    <textarea class="journal-textarea" id="journalText" placeholder="Escribe lo que sientes, lo que piensas, lo que no le dices a nadie..."></textarea>
+    <div class="msg-display" id="moodMsg"></div>
+    <!-- Video por estado de ánimo -->
+    <div class="mood-video-box" id="moodVideoBox">
+      <video id="moodVideo" controls preload="none">
+      </video>
+      <div class="mood-video-upload">
+        <label id="moodVideoLabel" for="moodVideoInput">+ agregar video para este momento</label>
+        <input type="file" id="moodVideoInput" accept="video/*">
+      </div>
+    </div>
+    <div class="journal-btns">
+      <button class="save-btn" id="saveBtn">guardar en mi diario ✦</button>
+      <button class="read-btn" id="readBtn">releer mis entradas 📖</button>
+    </div>
+  </div>
+</section>
+ 
+<div id="journalModal"><div class="jm-inner">
+  <p class="jm-title">Tu diario, Aby 📖</p>
+  <div id="jEntriesList"></div>
+  <button class="jm-close" id="jmClose">× cerrar</button>
+</div></div>
+ 
+<!-- HINT -->
+<section id="hint-section">
+  <div class="hint-card fade-in">
+    <div class="hint-star">✦</div>
+    <p class="hint-text">"Hay alguien que siempre nota cuando no estás,<br>que piensa en ti cuando ve el cielo y sus estrellas,<br>por eso esta canción siempre será tuya <span>A Sky Full of Stars</span><br>porque eso es exactamente lo que eres."</p>
+    <p class="hint-small">No es coincidencia que esto exista.<br>Alguien una personita por ahí jasjsaj quién sabe quién será, se preguntó alguna forma en la que podría animarte y decidió crear un mini universo para ti.<br>Esa persona te quiere con todo el corazón y siempre te extraña. 🌌</p>
+  </div>
+</section>
+
+<!-- RANDOM SECTION -->
+<section id="random-section">
+  <div class="random-wrap fade-in">
+    <p class="random-label">para cuando necesites reírte un poco</p>
+    <h2 class="random-title-el">Videos <span>Random</span> 🎲</h2>
+    <div class="random-divider"></div>
+    <div class="random-video-box" id="randomVideoBox">
+      <p class="random-placeholder" id="randomPlaceholder">Toca el botón para ver una sorpresa 🎁</p>
+      <video id="randomVideo" controls preload="none" style="display:none;">
+        Tu navegador no soporta video HTML5.
+      </video>
+    </div>
+    <button class="random-btn" id="randomBtn">✦ siguiente video random ✦</button>
+    <div class="random-upload-hint">Si el video no carga, <label for="randomFileInput" style="color:var(--lavender);cursor:pointer;border-bottom:1px solid rgba(184,169,224,.3);padding-bottom:1px;">selecciónalo desde tu carpeta</label>
+      <input type="file" id="randomFileInput" accept="video/*,audio/*" style="display:none;">
+    </div>
+  </div>
+</section>
+ 
+<!-- MINI STORY -->
+<section id="story-section">
+  <div class="big-header fade-in" style="max-width:720px;">
+    <p class="big-num rose">// una historia para ti</p>
+    <h2 class="big-title" style="font-size:clamp(1.8rem,4.5vw,3.5rem);">La chica de las estrellas</h2>
+  </div>
+  <div class="story-anime-img fade-in" id="storyImg">
+    <img src="Diseño sin título.jpg" alt="Aby y Josh bajo las estrellas" />
+  </div>
+  <div class="story-box" id="storyBox"></div>
+  <p class="story-end-note" id="storyEndNote">~ continuará... ~</p>
+  <button class="oath-btn" id="oathBtn">Esto Es Lo Que Decía El Juramento ✦</button>
+</section>
+ 
+<div id="oathModal"><div class="oath-inner">
+  <div class="oath-top">🌌</div>
+  <p class="oath-title">El juramento de Josh para Aby</p>
+  <p class="oath-text" id="oathText"></p>
+  <p class="oath-sign">— Josh ✦ siempre</p>
+  <button class="oath-close" id="oathClose">× cerrar</button>
+</div></div>
+ 
+</script>
+ <!-- SECCIÓN FINAL -->
+<section id="final-section">
+  <button class="final-btn fade-in" id="finalBtn">✦ para ti, siempre ✦</button>
+</section>
+
+<!-- MODAL FINAL -->
+<div id="finalModal">
+  <div class="final-modal-inner">
+    <span class="fm-stars">✨ 🌸 ✨</span>
+    <p class="fm-title">Nunca dejaré de estar<br>presente en tu universo</p>
+    <div class="fm-divider"></div>
+    <p class="fm-body">
+      Aby,<br><br>
+      No importa cuánto tiempo pase, cuántas estrellas cambien el cielo, cuántas canciones escuches sin que yo esté ahí para mandártelas — <em>siempre voy a estar presente.</em><br><br>
+      Puede que algunas veces sea intenso, lamento eso, pero igual no se es como mi forma de hacerte saber que aqui sigo, que no tienes que temer que me tienes a mi tambien.  Tu estas en el pensamiento de mis mañanas, en las canciones que de repente suenan y dicen todo lo que no sé decir, en las películas que veo pensando <em>"le gustaría a Aby"</em>, en ese lugar del corazón donde se guardan las personas que de verdad, de verdad, importan.<br><br>
+      Y tú eres esa persona para mí.<br><br>
+      <strong>Nunca voy a dejar de extrañarte.</strong> Nunca voy a dejar de ver en ti a esa chica increíble que aparece en mis mejores recuerdos con esa sonrisa que podría iluminar galaxias enteras. Porque lo que eres — tu voz, tus manos sobre el piano, violin, guitarra o cualquier cosa que llegues a tocar o hacer,  tu manera de reír, tu corazón enorme que a veces cuidas con tanta discreción — eso no se olvida, Aby asi que a pesar de mi pesima memoria, los momentos contigo, las conversaciones y a ti eso si que jamas lo olvidare.<br><br>
+      Este universo lo construí para que lo vieras. Para que cuando lo abras, en cualquier momento, en cualquier lugar del mundo, sepas que en algún rincón del planeta hay alguien que te ve por lo que eres, que te extraña sin que tengas que pedirlo, y que <em>siempre, siempre</em> va a desear lo mejor para ti.<br><br>
+      <strong>Eres perfecta</strong>  — perfecta Asi los demás o tu digas lo contrario nunca cambiare mi opinion. Y el mundo, mi mundo, es mejor porque existes en él.<br><br>
+      Con todo el corazón,
+    </p>
+    <p class="fm-sign">— Josh 🌌✦</p>
+    <p class="fm-note">siempre presente · siempre admirándote · siempre aquí cozaron</p>
+    <button class="fm-close" id="fmClose">× cerrar</button>
+  </div>
+</div>
+
+ 
+<!-- BG MUSIC (Chainsaw Man) -->
+<audio id="bgMusic" src="Chainsaw Man The Movie_ Reze Arc  OST -  09 - in the pool (mp3cut.net).mp3" loop></audio>
+<audio id="fgAudio"></audio>
+ 
+<script>
+// ── CURSOR ──
+const cur=document.getElementById('cursor');
+document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
+function BC(el){if(!el)return;el.addEventListener('mouseenter',()=>cur.classList.add('big'));el.addEventListener('mouseleave',()=>cur.classList.remove('big'));}
+ 
+// ── STARS ──
+const canvas=document.getElementById('starCanvas'),ctx=canvas.getContext('2d');
+let W,H,stars=[],shooters=[];
+function RC(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}RC();window.addEventListener('resize',RC);
+stars=Array.from({length:300},()=>({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.5+.3,a:Math.random(),da:(Math.random()-.5)*.008,sp:Math.random()*.12+.04}));
+setInterval(()=>shooters.push({x:Math.random()*window.innerWidth*.6,y:Math.random()*window.innerHeight*.4,vx:Math.random()*5+4,vy:Math.random()*3+2,len:Math.random()*80+60,life:1}),3200);
+(function loop(){
+  ctx.clearRect(0,0,W,H);
+  stars.forEach(s=>{s.a+=s.da;if(s.a<=0||s.a>=1)s.da*=-1;s.y-=s.sp;if(s.y<-2){s.y=H+2;s.x=Math.random()*W;}ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${s.a})`;ctx.fill();});
+  shooters=shooters.filter(sh=>sh.life>0);
+  shooters.forEach(sh=>{ctx.beginPath();ctx.moveTo(sh.x,sh.y);ctx.lineTo(sh.x-sh.len,sh.y-sh.vy*sh.len/sh.vx);const g=ctx.createLinearGradient(sh.x,sh.y,sh.x-sh.len,sh.y-sh.vy*sh.len/sh.vx);g.addColorStop(0,`rgba(255,255,240,${sh.life})`);g.addColorStop(1,'rgba(255,255,240,0)');ctx.strokeStyle=g;ctx.lineWidth=1.5;ctx.stroke();sh.x+=sh.vx;sh.y+=sh.vy;sh.life-=.025;});
+  requestAnimationFrame(loop);
+})();
+ 
+// ── FIREWORKS + HEARTS ──
+const fwc=document.getElementById('fwCanvas'),fwCtx=fwc.getContext('2d');
+let fwW,fwH;
+function resizeFW(){fwW=fwc.width=window.innerWidth;fwH=fwc.height=window.innerHeight;}
+resizeFW();window.addEventListener('resize',resizeFW);
+const fwP=[];
+const fwColors=['#FF3366','#FF6B9D','#FFB5C8','#FFE566','#FF9ECD','#FF1744','#FF80AB','#f8b4d9','#e8a0b4','#b8a9e0'];
+function heartPt(t,cx,cy,sz){return{x:cx+sz*16*Math.pow(Math.sin(t),3)/16,y:cy-sz*(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))/16};}
+function launchHFW(cx,cy){
+  const sz=10+Math.random()*8,cnt=70;
+  for(let i=0;i<cnt;i++){const t=(i/cnt)*Math.PI*2,pt=heartPt(t,cx,cy,sz),dx=pt.x-cx,dy=pt.y-cy,d=Math.sqrt(dx*dx+dy*dy)||1,sp=2+Math.random()*2.5;fwP.push({x:cx,y:cy,vx:(dx/d)*sp*(0.7+Math.random()*.6),vy:(dy/d)*sp*(0.7+Math.random()*.6),color:fwColors[Math.floor(Math.random()*fwColors.length)],alpha:1,size:2+Math.random()*2.5,decay:.012+Math.random()*.01,gravity:.05});}
+  for(let i=0;i<20;i++){const a=Math.random()*Math.PI*2,sp=1+Math.random()*4;fwP.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,color:'#ffffff',alpha:1,size:1+Math.random()*1.5,decay:.02+Math.random()*.02,gravity:.03});}
+}
+(function animFW(){fwCtx.clearRect(0,0,fwW,fwH);for(let i=fwP.length-1;i>=0;i--){const p=fwP[i];p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;p.vx*=.98;p.vy*=.98;p.alpha-=p.decay;if(p.alpha<=0){fwP.splice(i,1);continue;}fwCtx.save();fwCtx.globalAlpha=p.alpha;fwCtx.beginPath();fwCtx.arc(p.x,p.y,p.size,0,Math.PI*2);fwCtx.fillStyle=p.color;fwCtx.shadowBlur=8;fwCtx.shadowColor=p.color;fwCtx.fill();fwCtx.restore();}requestAnimationFrame(animFW);})();
+const hC=document.getElementById('hearts-container');
+const hE=['❤️','💕','💖','💗','💓','💞','🩷','💝','✨','🌟'];
+function spawnH(x,y){for(let i=0;i<6;i++){const h=document.createElement('span');h.className='floating-heart';h.textContent=hE[Math.floor(Math.random()*hE.length)];h.style.left=(x-20+Math.random()*40)+'px';h.style.top=(y-20+Math.random()*20)+'px';h.style.fontSize=(.9+Math.random()*.8)+'rem';h.style.animationDuration=(1.8+Math.random())+'s';hC.appendChild(h);setTimeout(()=>h.remove(),3000);}}
+document.addEventListener('click',e=>{launchHFW(e.clientX,e.clientY);spawnH(e.clientX,e.clientY);});
+ 
+// ── BG MUSIC MANAGER ──
+const bgMusic=document.getElementById('bgMusic');
+let bgStarted=false;
+let pianoTimer=null;
+let mediaPlaying=false; // any video/audio other than bg
+ 
+function startBG(){
+  if(bgStarted)return;bgStarted=true;
+  bgMusic.volume=0.55;
+  bgMusic.play().catch(()=>{});
+}
+function pauseBG(){bgMusic.pause();}
+function resumeBG(){if(!mediaPlaying&&bgStarted)bgMusic.play().catch(()=>{});}
+ 
+// Piano pauses BG for 1.8s after last key
+function pianoPauseBG(){
+  pauseBG();
+  if(pianoTimer)clearTimeout(pianoTimer);
+  pianoTimer=setTimeout(()=>{resumeBG();},1800);
+}
+ 
+// Any media element (video/audio fg) pauses BG, resumes when ended
+function registerMedia(el){
+  el.addEventListener('play',()=>{mediaPlaying=true;pauseBG();if(pianoTimer){clearTimeout(pianoTimer);pianoTimer=null;}});
+  el.addEventListener('pause',()=>{mediaPlaying=false;resumeBG();});
+  el.addEventListener('ended',()=>{mediaPlaying=false;resumeBG();});
+}
+ 
+document.addEventListener('click',startBG,{once:true});
+ 
+// ── AUDIO CONTEXT (piano) ──
+const AC=new(window.AudioContext||window.webkitAudioContext)();
+const NF={C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392,A4:440,B4:493.88,C5:523.25,D5:587.33,E5:659.25,Cs4:277.18,Ds4:311.13,Fs4:369.99,Gs4:415.3,As4:466.16,Cs5:554.37,Ds5:622.25};
+const WK=['C4','D4','E4','F4','G4','A4','B4','C5','D5','E5'];
+const BK=['Cs4','Ds4',null,'Fs4','Gs4','As4',null,'Cs5','Ds5'];
+const NE=['🎵','🎶','✨','🌟','💫','🎼','🎹','⭐'];
+ 
+// Active oscillators per key (for polyphony + stop on release)
+const activeNotes={};
+ 
+function startNote(key,freq){
+  if(activeNotes[key])return;
+  if(AC.state==='suspended')AC.resume();
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.connect(g);g.connect(AC.destination);
+  o.type='sine';o.frequency.value=freq;
+  g.gain.setValueAtTime(0,AC.currentTime);
+  g.gain.linearRampToValueAtTime(.4,AC.currentTime+.02);
+  o.start();
+  activeNotes[key]={o,g};
+  pianoPauseBG();
+  startBG();
+}
+ 
+function stopNote(key){
+  const n=activeNotes[key];
+  if(!n)return;
+  n.g.gain.setValueAtTime(n.g.gain.value,AC.currentTime);
+  n.g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.5);
+  n.o.stop(AC.currentTime+.5);
+  delete activeNotes[key];
+}
+ 
+function bubble(x,y){const el=document.createElement('div');el.className='note-bubble';el.textContent=NE[Math.floor(Math.random()*NE.length)];el.style.cssText=`left:${x}px;top:${y}px`;document.body.appendChild(el);setTimeout(()=>el.remove(),1300);}
+ 
+const pEl=document.getElementById('piano');
+// White keys
+WK.forEach(n=>{
+  const k=document.createElement('div');k.className='wkey';k.innerHTML=`<span>${n.replace(/\d/,'')}</span>`;
+  k.addEventListener('mousedown',e=>{k.classList.add('pressed');startNote(n,NF[n]);bubble(e.clientX,e.clientY);});
+  k.addEventListener('mouseup',()=>{k.classList.remove('pressed');stopNote(n);});
+  k.addEventListener('mouseleave',()=>{k.classList.remove('pressed');stopNote(n);});
+  // Touch
+  k.addEventListener('touchstart',e=>{e.preventDefault();k.classList.add('pressed');startNote(n,NF[n]);bubble(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
+  k.addEventListener('touchend',()=>{k.classList.remove('pressed');stopNote(n);});
+  pEl.appendChild(k);BC(k);
+});
+// Black keys
+BK.forEach((n,i)=>{
+  if(!n)return;
+  const k=document.createElement('div');k.className='bkey';k.style.left=(i*44+30)+'px';
+  k.addEventListener('mousedown',e=>{e.stopPropagation();k.classList.add('pressed');startNote(n,NF[n]);bubble(e.clientX,e.clientY);});
+  k.addEventListener('mouseup',()=>{k.classList.remove('pressed');stopNote(n);});
+  k.addEventListener('mouseleave',()=>{k.classList.remove('pressed');stopNote(n);});
+  k.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();k.classList.add('pressed');startNote(n,NF[n]);bubble(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
+  k.addEventListener('touchend',()=>{k.classList.remove('pressed');stopNote(n);});
+  pEl.appendChild(k);BC(k);
+});
+// Also stop all on mouseup/touchend at document level (for dragging off)
+document.addEventListener('mouseup',()=>{Object.keys(activeNotes).forEach(k=>stopNote(k));document.querySelectorAll('.wkey,.bkey').forEach(k=>k.classList.remove('pressed'));});
+ 
+// ── UNIVERSE CARDS ──
+const ucards=[
+  {icon:'🕷️',label:'Spider-Man favorito',name:'Miles & Gwen',glow:'rgba(255,50,50,.15)',reveal:'Se muy bien el gusto por estas pelis de Spider-Verse jsajas sabes que tambien me encantan mucho, la verdad he esperado ver la tercera contigo aunque falta hasta el otroo año asjsaj pero igual quiero verla contigo, aunque este año sale en el mejor mes del mundo que es julio la otra de Tom holland, pero se que es compli por trabajo y todo iguall nunca cierro posibilidad pero si no el otro año sera la de miles ajsjassa,  estas peliculas te roban el corazón y muchas veces identifican. "Anyone can wear the mask." ✨ Y tú, mi bella Aby, eres de las personas que  llevan puesta la mascara sin saberlo — proteges, das lo mejor, te importa la gente. la verdad tu eres mi superheroina favorita no podria haber alguien mejor que tu porque apesar de cuantas cosas pasen siempre te levantas y siempre regresas, Miles y Gwen son especiales porque son imperfectos y aun así se lanzan al vacío, dan su salto de Fé, asi es exactamente como hay que vivir. 🕷️'},
+  {icon:'🧡',label:'Sentimientos',name:'Increíbles',glow:'rgba(255,160,50,.12)',reveal:'Tu eres muy linda, demasiado de hecho eres una obra de arte como te he dicho en otras ocasiones sjasjsa.\n\n pero tambien tienes algo mas que es muy lindo y tambien muy importante tus sentimientos, tu eres muy buena persona, eres amable, eres inteligente tambien demasiado y no pienso discutirlo, pero ese corazón tuyo es tan precioso, —  y entiendo porque no lo muestres mucho o entregues tu corazón a cualquiera y eso esta super bien es lo mejor que puedes hacer porque la verdad es algo tan valioso que wow,\n\n definitivamente el que logre eso va a ser muy afortunado, sera un novio muy afortunado aunque se que no quieressss en este momento y bueno no te gusta nadie lo se, ay enserio que se que llegara alguien y vera todo lo que veo en ti y sera el mas feliz contigo ✨💙'},
+  {icon:'🎌',label:'También te encanta',name:'Your Name',glow:'rgba(255,150,200,.12)',reveal:'"Musubi." El hilo que conecta personas que ni siquiera se conocen todavía.\n\n asi suene un poco tonto es lo que pense contigo, y la verdad lo sigo creyendo, digo es un fuerte sentimiento, una gran conexion y sin importar el tiempo o lugar nunca dejaras de importarme, y estaremos destinados sjsjsjjs si hubiera mil mundos o mil vidas, te buscaria en cada una de ellas sin ti nada seria divertido ni tendria sentido. Esa sensación de que alguien existe en algún lugar y que el universo los va a cruzar...\n\n🌙'},
+  {icon:'💧',label:'Tu crush anime',name:'Giyu Tomioka',glow:'rgba(80,120,220,.15)',reveal:'Callado, Serio, Bueno admito que si esta bien pinta jajasj, no expresa lo que siente.\n\nPero cuando actúa, actúa con todo. Protege sin pedir ningun reconocimiento, e incluso se cree debil o que no merece ser ni siquiera un pilar osea nooo y sabemos que es super fuerte, la respiracion la domina a la perfeccion y bueno sabemos que es hasta el unico que sobrevive, pero el punto no se da cuenta lo mucho que vale y lo talentoso que es, asi que cuando te diga que eres una maravilla ey no lo dudes no te lo digo por decir jmmm, es una realidad.\n\n...Pero sabes algo en lo introvertido y lo que calla no hay problema es algo muy caracteristico de el. 💙'},
+    {icon:'🌀',label:'Película cosmos',name:'Interstellar',glow:'rgba(180,100,255,.12)',reveal:'"Love is the one thing that transcends time and space."\n\nCooper atravesó agujeros negros, dimensiones, el tiempo mismo — y al final fue el amor lo que lo guió, el regresar con su hija.\n\nMereces que alguien cruce galaxias por ti, y bueno lo haria por ti, lo vales . 🪐'},
+  {icon:'🎮',label:'The Last of Us',name:'Joel & Ellie',glow:'rgba(100,200,80,.1)',reveal:'Una historia que empieza con pérdida y termina siendo sobre lo que uno haría por la persona que ama,\n\nMinecraft para construir, FNAF para sobrevivir, TLOU para sentir, Estos juegos te describen a la perfección creatividad, valentía y corazón enorme. 🌿'},
+  {icon:'🌸',label:'Sueño pendiente',name:'Japón',glow:'rgba(255,180,200,.1)',reveal:'Sakura cayendo, templos al amanecer, ramen de medianoche...\n\nVer anime en su tierra natal. Encontrar los lugares que solo existen en pantalla.\n\nVamos a llegar ahí, asjjasjsa te imaginas lo lindo y chevere que la pasariamos, hasta podriamos ir a las escaleras de your name osea esas toca ir o ir, auqnue tambien hay tantos lugares, los arboles de cerezo tan hermosos y en fin jasjasj vamos a ahorrar e iremos. 🗾✨'},
+  {icon:'📖',label:'Tu libro del corazón',name:'Boulevard',glow:'rgba(245,215,142,.12)',reveal:'"Boulevard" — una historia donde los sentimientos más intensos son los que más se callan.\n\nTú que lees, que sientes profundo y no siempre lo dices... tiene todo el sentido que ese libro te haya llegado.\n\nAlguien que ama leer tiene un mundo interior enorme. Y el tuyo, Aby, debe ser el más hermoso de todos y bueno sabemos lo tragico que es y triste pero no deja de ser una joya, siempre tus gustos sobresalen. 📚'},
+  {icon:'🎬',label:'Viernes de películas',name:'Adam Sandler',glow:'rgba(255,220,100,.1)',reveal:'Que te gusten las películas de Adam Sandler ya de por si increible, aunque lo entinedo es re chistosooo y cae bien, y sabes tu con tus super chistes le ganas jasjajsajas bueno no mentiras aun no pero igual tiras unas cosas ajsjasjsa que siempre me hacen reir.\n\nEfectivamente tu humor es de lo mejor\n\nEsa capacidad de encontrar alegría en lo simple o que muchos dirian rarito es increible ajsjajs aunque ya sabes mejor ser rarito que normal e igual a los demas tu lo entiendes. 😄'},
+    {icon:'🎥',label:'Passengers',name:'Chris patt',glow:'rgba(255,220,100,.1)',reveal:'Yo me sorprendi que conocieras esta peli, es una joya pero osea es muy infravolarada y casi nadie de mis amigos ni nadie la conocia, desde ahi ya me empezaba a dar cuenta y decia aishhh esos gustos si son de los buenosss',glow:'rgba(100,200,255,.12)',reveal:'Dos personas en el espacio infinito, solos Pero al mismo tiempo juntos, uf y la escena que esta con el bartender la frase que solto osea identifica mucho.\n\n\n\n jasjsajsa sabes que juntos debemos ver el universo y multiverso ir a todos esos lugares lejanos y apoyarnos siempre, pero juntoss. 🌌'},
+  
+];
+const grid=document.getElementById('uGrid');
+const uModal=document.getElementById('uModal'),mIcon=document.getElementById('mIcon'),mTitle=document.getElementById('mTitle'),mBody=document.getElementById('mBody'),mClose=document.getElementById('mClose');
+function openUModal(c){mIcon.textContent=c.icon;mTitle.textContent=c.name;mBody.textContent=c.reveal;uModal.classList.add('open');document.body.style.overflow='hidden';}
+function closeUModal(){uModal.classList.remove('open');document.body.style.overflow='';}
+mClose.addEventListener('click',closeUModal);uModal.addEventListener('click',e=>{if(e.target===uModal)closeUModal();});BC(mClose);
+ucards.forEach(c=>{const d=document.createElement('div');d.className='u-card';d.style.setProperty('--glow',c.glow);d.innerHTML=`<span class="icon">${c.icon}</span><span class="label">${c.label}</span><p class="name">${c.name}</p><p class="tap-hint">toca para leer ✦</p>`;d.addEventListener('click',()=>{openUModal(c);startBG();});BC(d);grid.appendChild(d);});
+ 
+// ── QUIEN ERES ──
+const quien=[
+  {icon:'✝️',title:'Fe que sostiene',desc:'"Y sabemos que a los que aman a Dios, todas las cosas les ayudan a bien." — Romanos 8:28. Tu fé es parte de lo que te hace tan fuerte, es increible y es muy bueno porque la verdad con El es con el que todo se puede lograr. Esa conexión que tienes es algo muy hermoso.'},
+  {icon:'🧠',title:'Mente increíble',desc:'Nunca esperé conocer a alguien como tú, tienes tantas cosas que podría escribirse un libro, de hecho debo hacerlo ajsajasj y ni así alcanzarían las palabras para describir lo increíble que eres, ni durando toda la vida escribiendo.'},
+  {icon:'🌐',title:'Bilingual brain',desc:'Your English is sharp and it shows. Two languages, double the worlds you can explore. Y sabes cositas del francés también — osea wowwww jasjajsajsa.'},
+  {icon:'🎌',title:'Anime Wow',desc:'Tus recomendaciones es que nunca fallannn, de los animes que me has recomendado, SAO y Your Lie In April sin mentirte se han vuelto de mis favoritos de hecho apenas inicio Abril empece a volver a ver ese trauma, Tienes un radar increíble para las historias que de verdad llegan al corazón. SAO, Demon Slayer, Your Name... impecable.'},
+  {icon:'📚',title:'Mi Lectora Favorita',desc:'Boulevard, historias que otros apenas notan... tú las absorbes, se que en menos de nada podrias acabarte un libro, ajsjasja tambien cuando escribia el libro y te enviba capitulos super largos y tu rapidito los terminabas, leer es practicamente como viajar entonces siendo asi tú tienes el pasaporte más sellado de todos. Ese mundo interior tuyo debe ser el más hermoso que existe.'},
+  {icon:'📷',title:'Ojo artístico',desc:'La forma en que ves el mundo no es como la de los demás, notas cosas, captas detalles. Hay una sensibilidad en ti que hace que todo lo que tocas tenga más belleza, pero no solo eso tu oido tambien es bien increible ajsjsja de hecho me acuerdo que una vez me habias dicho que te pasaba como Zenitzu que aunque dormias escuchabas lo que pasaba a tu alrededor.'},
+  {icon:'🌙',title:'Introvertida',desc:'No necesitas decirlo todo para sentirlo todo, alguna vez me dijiste que eras introvertida, y que hay chicas super extrovertidas y mejores y yo solo quedaba como WHATTT Abyyyyy osea nonnono primero mejores claro que no primero sin comparacion pero si asi fuera ganarias por muchisimos aspectos que ya te he dicho en todo este universo ajsjsa y segundo no hay nada de malo en ser introvertida osea es algo bueno, a mi me gusta la verdad eres de las que escuchan de verdad, que observan, que guardan lo que realmente importa. Eso es algo escaso hoy en dia pero nuevamente hermosa.'},
+  {icon:'💬',title:'Iman',desc:'Hay algo en ti que hace que las personas quieran acercarse a ti , y bueno ya sabes tus compañeritos de trabajo que para nada me daban celos jasjasjjas *guiño guiño*  pero bueno no es algo raro la verdad yo lo entiendo muy bien transmites algo que atrae bastante eres lit un iman ajsjasjsa y aunque puede que algunos esten solo molestando hay otros que si de verdad les gustas y atraes — pero ya hablando por mi tu eres mi espacio seguro, y quien realmente me causa sonrisas '},
+  {icon:'🎙️',title:'Curadora de historias',desc:'Sabes qué anime recomendar, qué serie vale la pena, qué película va a causar un trauma ajsjaj aunque bueno yo inicie dando un poquitito de traumas pero bueno igual mejor mejor que compartamos, la verdad yo cada que veo que algo te gusta una cancion, una pelicula, serie, anime, yo me intereso en verlo, porque quiero saber mas de tus gustos y no se tal vez luego usarlos como tema de conversacion para hablar contigo ajsjsa con algo que se que te gusta asi como yo recuerdo la primera primera vez recien empezabamos a conocernos me recomendaste un libro lo recuerdo muy bien era el de "Antes de Diciembre", habias dicho que te gustaba ajsaja y yo me instale el wattpad y empece a leerlo bueno asi soy con todo pero por ti la verdad no hago esto de hecho, solo tu porque eres mi excepcion.'},
+];
+const qGrid=document.getElementById('quienGrid');
+quien.forEach(q=>{const d=document.createElement('div');d.className='quien-card fade-in';d.innerHTML=`<span class="q-icon">${q.icon}</span><p class="q-title">${q.title}</p><p class="q-desc">${q.desc}</p>`;qGrid.appendChild(d);BC(d);});
+ 
+// ── YLIA VIDEO ──
+const yliaVideo=document.getElementById('yliaVideo');
+registerMedia(yliaVideo);
+document.getElementById('yliaFileInput').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  yliaVideo.src=URL.createObjectURL(f);yliaVideo.load();
+});
+ 
+// ── MUSIC PLAYER (fg) ──
+const fgAudio=document.getElementById('fgAudio');
+registerMedia(fgAudio);
+const btnPlay=document.getElementById('btnPlay'),btnPrev=document.getElementById('btnPrev'),btnNext=document.getElementById('btnNext');
+// Note: music-section removed so these buttons don't exist — keeping fgAudio for compat
+ 
+// ── ANIME CARDS ──
+const animeData=[
+  {title:'Demon Slayer',quote:'No importa cuántas veces caigas. Levántate. Eso es lo único que importa.',source:'— Tanjiro Kamado, Kimetsu no Yaiba',desc:'Sabemos que esta es una historia sobre proteger lo que amas sin importar el costo. Tanjiro siempre corre hacia el peligro solo para proteger a los suyos — es exactamente lo que haría por ti.',tags:['Acción','Lágrimas','Belleza visual','Giyu Tomioka']},
+  {title:'Sword Art Online',quote:'No puedes hacer nada si no crees en ti mismo primero.',source:'— Kirito, Sword Art Online',desc:'SAO la verdad fue increible me emocione, llore, tus recomendaciones no fallan, esta fue de esas historias que te meten en un mundo y no quieren soltarte y a ver Kirito y Asuna construyeron algo real en algo que era imposible, asi que aunque haya muchas cosas que puedan considerarse imposibles, yo las haria si en el motivo de hacerlas es por ti.\n\nTu anime del corazón jsjs con razón, y la verdad al igual que kirito con asuna tu ya tienes todo mi corazón.',tags:['Isekai','Amor épico','Aventura']},
+  {title:'Your Name',quote:'Musubi es el nombre de la conexión entre las personas y el mundo.',source:'— Mitsuha, Kimi no Na wa',desc:'Esta película es la que te hace creer que dos personas pueden estar destinadas a encontrarse sin haberlo planeado nunca.\n\nDemasiado real para ser solo animación. Yo digo que puede ser cierto.',tags:['Romance','Makoto Shinkai','Destino']},
+  {title:'Your Lie in April',quote:'La música no es lo que escuchas, es lo que sientes.',source:'— Kousei Arima, Shigatsu wa Kimi no Uso',desc:'Una historia sobre el piano, el amor, y aprender a vivir después de perder — claramente un hermoso trauma.\n\nTú que sientes la música... esta es para ti especialmente.',tags:['Piano','Dolor bonito','Música','Romance']},
+];
+const aC=document.getElementById('animeCards');
+animeData.forEach(a=>{const d=document.createElement('div');d.className='anime-card fade-in';d.innerHTML=`<div><p class="anime-quote-text">"<em class="anime-quote-em">${a.quote}</em>"</p><p class="anime-source">${a.source}</p></div><div><p class="anime-desc-p">${a.desc.replace(/\n\n/g,'<br><br>')}</p><div class="anime-tags">${a.tags.map(t=>`<span class="a-tag">${t}</span>`).join('')}</div></div>`;aC.appendChild(d);});
+ 
+// ── WORDS ──
+const wdata=[
+  {q:'"She is clothed in strength and dignity, and she laughs without fear of the future."',attr:'— Proverbios 31:25 · para ti, siempre',cls:''},
+  {q:'"The most courageous act is still to think for yourself. Aloud."',attr:'— Coco Chanel · porque tienes voz',cls:'rb'},
+  {q:'"Not all those who wander are lost."',attr:'— J.R.R. Tolkien · porque explorar está bien',cls:'gb'},
+  {q:'"She remembered who she was and the game changed."',attr:'— Lalah Delia · para cuando lo olvides',cls:'lb'},
+  {q:'"Music gives a soul to the universe, wings to the mind, flight to the imagination, and life to everything."',attr:'— Platón · para la chica que toca cuatro instrumentos',cls:''},
+  {q:'"One day you will tell your story of how you overcame what you went through, and it will be someone else\'s survival guide."',attr:'— Brené Brown · porque lo que viviste tiene propósito',cls:'rb'},
+  {q:'"You are allowed to be both a masterpiece and a work in progress simultaneously."',attr:'— Sophia Bush · para cuando sientas que no es suficiente',cls:'gb'},
+];
+const wL=document.getElementById('wordsList');
+wdata.forEach(w=>{const d=document.createElement('div');d.className=`word-item ${w.cls} fade-in`;d.innerHTML=`<p class="word-q">${w.q}</p><p class="word-attr">${w.attr}</p>`;wL.appendChild(d);});
+ 
+// ── JOURNAL with varied messages + videos ──
+const moods=[{label:'😊 Feliz',key:'happy'},{label:'😔 Triste',key:'sad'},{label:'😤 Enojada',key:'angry'},{label:'🌙 Sola',key:'alone'},{label:'😴 Agotada',key:'tired'},{label:'🌸 En paz',key:'peace'}];
+const moodMsgsBank={
+  happy:['¡Eso me alegra muchísimoooo! ayyyy Esa sonrisa tuya ilumina todo, hasta a mí ya me pusiste feliii. ✨','ayyyy esoooo, mi reina hermosaaaa ¡Disfrútalo! 🌟','¡Qué lindo saber que estas así! Mereces todos los días felices, mi bellísima Aby. 💕','Tu felicidad es contagiosa aunque estés lejos, lo sabes ¿verdad? 🌸','Guarda ese momento, Aby — los días buenos como este son los que alimentan el alma. 🌻','¡Así me gusta mi cozaron! Brillando como la luna que eres. ⭐','Ya decía yo que era un bonito día — tú eres la razón de que lo sea. 💛'],
+  sad:['Está bien no estar bien, Aby enserio mira aunque no me gusta que lo hagas — llora si necesitas, debes desahogarte. Luego el sol vuelve, lo prometo. 🌙','Estos días grises también pasaran, mañana sera diferente, tranqui si quieres puedes escribirme o llamarme o hablamos enserio estare encantado de ayudarte. 💙',
+    'Ay mi guerrerita, tu tranquila que las cosas mejoraran, Dios siempre esta a tu lado, siempre te dara las fuerzas que necesitas, y tambien toy aqui por ti tonces tienes todo todo el apoyo del mundo. 🫂',
+    'Hay alguien que no para de pensar en ti ahora mismo, en como hacerte feliz, siempre voy a querer encontrar la forma de sacar esa bella sonrisa que tienes. 🌟',
+    'La tristeza es solo el corazón que puede que necesite procesar algo, dale espacio, pero no te pierdas en ella. 💜',
+    'Eres humana y tienes un gran corazón como te dije y sentir duele a veces, lo se pero tu eres tan valiente mi guerrerita Aby, tanto. 🌸',
+    'Respira. Este momento pasará. Y al otro lado hay algo mejor esperándote. ✨'],
+  angry:['Esa rabia que sientes es válida, se que debes tener tus motivos se que algo paso, pero  respira hondo, Aby Luego decides las cosas es mejor que estes en calma, no quiero que te me estreses y te enfermes. 💙',
+    'Esta bien no pasa nada deja que salga esa rabia, pero recuerda que tú siempre eres más grande que esto. 🌟',
+    'Cuéntale al diario todo lo que sientes si quieres para desahogarte, Aquí no hay juicios, Solo tú, esto es unicamente tuyo solo tu tienes el acceso ni siquiera yo. 📝',
+    '¿Sabías que hasta enojada eres increíble? Porque sí lo eres, esto es solo un momento una emocion que sientes lo que haya pasado o si dices algo esta bien es momentaneo no es quien eres no te va a definir asi que aun asi ya sabes eres y seguiras siendo mi maravilla favorita. 😤💕',
+    'Tómate unos minutos, si quieres tomate tiempo para ti, pon música, Respira, Luego verás todo más claro. 🎵',
+    'El enojo también forma parte de ti. No lo ignores, solo no lo dejes mandar. 💜',
+    'Esta también pasa. Mientras tanto, tú sigues siendo lo mejor. 🌸'],
+  alone:['No estás sola aunque a veces parezca, claro que no lo estas tienes a Dios tu mejor compañia y aqui me tienes asi me busques o no me busques estare presente para ti. 🌟',
+    'La soledad es de lo peor es algo, un sentimiento que no deberia existir pero ya sabes nunca estaras sola, pero si aun asi te sigues sintiendo igual mira esto como un espacio para ti misma, puedes intentar algo, hacer cosas diferentes hacer algo que te guste mucho puedes usar lo que sea a tu favor. ✨',
+    'Puede que te sientas solita (ya sabes que no lo estas jmmm) pero tambien recuerda nunca seras olvidada, mientras este aqui siempre seras mi persona favorita. 💕',
+    'Incluso en silencio, hay alguien que siempre tiene tu nombre en mente. 🌙',
+    'Ese silencio que sientes a veces es el más profundo de los abrazos. 🫂',
+    'Eres demasiado increíble para sentirte sola. El mundo necesita más personas como tú. 🌸'],
+  tired:['Trabajas demasiado y aun así das todo siempre tu mereces descansar, Aby De verdad. 🫂',
+    'Cierra los ojos un momento, el mundo puede esperar tú eres primero. 🌙',
+    'Cansada pero jamás rendida eso te define ahora descansa un poquito. 💜',
+    'Que el agotamiento de hoy sea la prueba de lo mucho que luchas, mi bella aby Eres increíble. ✨',
+    'Descansa sin preocupaciones solo sera un momento y sera demasiado merecido, descansar un poco no es rendirse. 💙',
+    'Hasta las estrellas se apagan un momento antes de brillar más fuerte. 🌟',
+    'Tu cuerpo te está pidiendo un descansito, dáselo te lo mereces más que nadie. 🌸'],
+  peace:['Esa calma que sientes es totalmente tuya cuidala mucho, siempre te dije que eres mi luz. 🌸',
+    'Disfruta este momento de paz, Aby, te lo ganaste. ✨',
+    'Qué hermoso es saber que estas así, en equilibrio, en ti misma. 💕',
+    'La paz interior es el regalo más difícil de encontrar y tú lo tienes hoy. 🌟',
+    'Guarda esta sensación en algún lugar especial, Para los días difíciles. 💛',
+    'Tranquilita y brillando suave, como siempre deberías estar. 🌙',
+    'Este es tu estado natural, ves como las cosas la perspectiva cambia. 🌸'],
+};
+ 
+function getNextMoodMsg(key){
+  const usedKey='aby_mood_idx_'+key;
+  const bank=moodMsgsBank[key];
+  let idx=parseInt(localStorage.getItem(usedKey)||'0');
+  const msg=bank[idx%bank.length];
+  localStorage.setItem(usedKey,(idx+1)%bank.length);
+  return msg;
+}
+ 
+// Video storage per mood (blob URLs survive session only)
+const moodVideos={};
+let activeMoodKey=null;
+ 
+const moodVideoBox=document.getElementById('moodVideoBox');
+const moodVideoEl=document.getElementById('moodVideo');
+const moodVideoInput=document.getElementById('moodVideoInput');
+const moodVideoLabel=document.getElementById('moodVideoLabel');
+registerMedia(moodVideoEl);
+ 
+moodVideoInput.addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f||!activeMoodKey)return;
+  moodVideos[activeMoodKey]=URL.createObjectURL(f);
+  moodVideoEl.src=moodVideos[activeMoodKey];
+  moodVideoEl.load();
+});
+ 
+
+ 
+let activeMood=null;
+const moodRow=document.getElementById('moodRow'),moodMsg=document.getElementById('moodMsg');
+moods.forEach(m=>{
+  const b=document.createElement('button');b.className='mood-btn';b.textContent=m.label;
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.mood-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');activeMood=m.key;activeMoodKey=m.key;
+    moodMsg.textContent=getNextMoodMsg(m.key);
+    moodMsg.classList.add('visible');
+    moodVideoLabel.textContent='+ agregar video para cuando te sientas '+m.label.replace(/^\S+\s/,'');
+    showMoodVideo(m.key);
+    startBG();
+  });
+  moodRow.appendChild(b);BC(b);
+});
+ 
+document.getElementById('saveBtn').addEventListener('click',()=>{
+  const txt=document.getElementById('journalText').value.trim();
+  if(!txt)return;
+  const entries=JSON.parse(localStorage.getItem('aby_journal')||'[]');
+  const now=new Date();
+  entries.unshift({date:now.toLocaleDateString('es-CO',{weekday:'long',year:'numeric',month:'long',day:'numeric'}),time:now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}),mood:activeMood,text:txt});
+  localStorage.setItem('aby_journal',JSON.stringify(entries));
+  moodMsg.textContent='Guardado ✦ Este momento ya es tuyo para siempre, Aby. 💫';
+  moodMsg.classList.add('visible');
+  document.getElementById('journalText').value='';
+  startBG();
+});
+BC(document.getElementById('saveBtn'));
+ 
+const jModal=document.getElementById('journalModal'),jList=document.getElementById('jEntriesList'),jmClose=document.getElementById('jmClose');
+function openJModal(){
+  const entries=JSON.parse(localStorage.getItem('aby_journal')||'[]');
+  jList.innerHTML='';
+  if(!entries.length){jList.innerHTML='<p class="jm-empty">Todavía no has escrito nada. Este espacio te espera cuando quieras. 🌙</p>';}
+  else{entries.forEach(e=>{const ml=e.mood?moods.find(m=>m.key===e.mood)?.label:'';const d=document.createElement('div');d.className='j-entry';d.innerHTML=`<div class="j-entry-header"><span class="j-entry-mood">${ml||'✦'}</span><span>${e.date}${e.time?' · '+e.time:''}</span></div><p class="j-entry-text">${e.text}</p>`;jList.appendChild(d);});}
+  jModal.classList.add('open');document.body.style.overflow='hidden';
+}
+function closeJModal(){jModal.classList.remove('open');document.body.style.overflow='';}
+document.getElementById('readBtn').addEventListener('click',()=>{openJModal();startBG();});BC(document.getElementById('readBtn'));
+jmClose.addEventListener('click',closeJModal);BC(jmClose);
+jModal.addEventListener('click',e=>{if(e.target===jModal)closeJModal();});
+
+// ── RANDOM VIDEOS ──
+const randomVideos=[
+  'YTDown.com_Shorts_ANIMO-ANIMO-ANIMO-ONE-TWO-THREE-FOUR-FIV_Media_BO9-h-3Kr-M_001_480p.mp4',
+  'QUIERO CHAMBA - LYRICS.mp4',
+  'Nezuko Running Meme.mp4',
+  'FUERA FUERA DEPRESIÓN 🗣️🔥🔥🔥.mp4',
+  'El monte Everest no tiene nada en contra de mi....mp4',
+  'EL SAPATO O EL ZAPATO.mp4',
+];
+let randomIdx=-1;
+const randomVideo=document.getElementById('randomVideo');
+const randomPlaceholder=document.getElementById('randomPlaceholder');
+const randomVideoBox=document.getElementById('randomVideoBox');
+const randomBtn=document.getElementById('randomBtn');
+const randomFileInput=document.getElementById('randomFileInput');
+registerMedia(randomVideo);
+
+randomBtn.addEventListener('click',()=>{
+  randomIdx=(randomIdx+1)%randomVideos.length;
+  // Try loading by filename (works if files are in same folder)
+  randomVideo.src=randomVideos[randomIdx];
+  randomVideo.load();
+  randomPlaceholder.style.display='none';
+  randomVideo.style.display='block';
+  startBG();
+  BC(randomBtn);
+});
+BC(randomBtn);
+
+// Fallback: manual file picker
+randomFileInput.addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  randomVideo.src=URL.createObjectURL(f);
+  randomVideo.load();
+  randomPlaceholder.style.display='none';
+  randomVideo.style.display='block';
+});
+
+ 
+// ── STORY ──
+const storyParas=[
+  'En un pequeño pueblo donde las noches suelen brillar mucho más que los días, vivía una chica que la verdad no tenía idea de lo extraordinaria que era.',
+  'Su nombre era <em style="color:var(--rose)">Aby</em>.',
+  'Sus manos eran tan hábiles, tan mágicas — con ellas podía hacer cualquier cosa que pasara por su mente. Entre una de esas grandes habilidades estaba la música, pero no solo sabía un instrumento, sino de cuatro. El piano, aunque aún era el más reciente, muy pronto iba a obedecer sus dedos como si lo hubiera creado ella misma. La guitarra siempre resonaba diferente cuando era ella quien la sostenía. Y el violín... estoy seguro que ese violín lloraba de felicidad cuando ella lo tocaba.',
+  'Así que como ya podrán ver, es increíble — y eso es solo una pizca de todas las habilidades que posee y que aún está por descubrir. Ella siempre trabajaba duro. Más duro de lo que nadie sabía, aguantando condiciones y horarios sin siquiera quejarse, porque así es ella — <em style="color:var(--gold)">todo lo que había que hacer, lo hacía completo</em>.',
+  'En sus horas libres viajaba, aunque no como lo estas pensando no de la forma convencional como lo seria en un avión o por carretera — todavía no (pero en su futuro sí que lo hará). Viajaba con sus ojos y su mente a través del anime, ese espacio en el que muestran mundos y situaciones que todos en algun momento decimos wow quisiera ser ese por lo que parecen imposibles, o sino viajaba a través de las páginas de <em style="color:var(--rose)">alguna maravilla literaria como puede ser Boulevard</em>, que le recordaban que los sentimientos más profundos son los más difíciles de decir.',
+  'Y aquí es donde entro yo — un chico.',
+  'Llamado <strong style="color:var(--gold);font-weight:400">Josh</strong>.',
+  'La verdad era alguien un poco ordinario, un poco común, la cosa es que podrias olvidarme despues de una hora de haberme conocido. Claro que no soy el protagonista de ninguna historia, yo soy más bien el personaje que podría aparecer en el capítulo tres y que puede pasar desapercibido — pero aquel que siempre está ahí, en el fondo, mirando y listo para apoyar cuando se necesite, o incluso cuando no.',
+  'Aunque nuestros mundos se cruzaron hace mucho o mas bien hace poco, no me parece que se bastante tiempo, porque la realidad es que nos falta mucho mas por recorrer. Pero La verdad empece a conocerla desde abril de 2024, lo recuerdo muy bien pero a pesar de eso, algo que siempre he notado desde el inicio es que tenemos una fuerte conexión — una que podría considerarse inquebrantable. De las pocas ocasiones en que pude verla, yo solo podía contemplar todo lo que ella transmitia su brillo, escuchar y ver cómo ella reía cuando algo le gustaba de verdad, cómo sus ojos cambiaban cuando hablaba de lo que amaba, Cómo callaba de una manera que decía más que mil palabras, porque <em style="color:var(--rose)">Aby mi bella Aby era de las personas que sienten en voz baja pero muy fuerte.</em>.',
+  'De alguna manera nuestros gustos musicales también estaban en conexión — podría saber muchas de sus canciones favoritas, Iris, Wonderwall, Gone Gone Gone, de hecho esa última me la dedico no sabe lo feliz que me hizo esa noche, no me habia pasado algo asi antes. Pero todas estas canciones ya hacian parte de mi vida desde antes pero las que ella me decia o que notaba que le gustaban yo solo empece a escucharlas tambien, las había escuchado tantas veces que ya eran parte de mi propia historia. Sabía que ella soñaba con viajar a tantos sitios, que cada video que veía yo solo podía mandárselo y decirle que algún día podríamos ir — y algún día será, prometido. Entre esos lugares está Japón, esa gran maravilla con sakura cayendo sobre piedras viejas, Bueno y claro que tambien esta su gran amor Giyu Tomioka su noviecito, aunque bueno entendía por qué tenia sus grandes motivos aunuqe estaba segurisimo de que si el existiese me abandonaria por el, tristemente—.',
+  'Pero bueno retomando en nuestra historia, Una noche —  de esas donde el cielo estaba tan lleno de estrellas que parecía inventado — le dedique una canción bueno fue hace ya un tiempo.',
+  '<em style="color:var(--gold)">"A Sky Full of Stars."</em>',
+  'Nunca le dije por qué. Pero a ver ella era de las que leen entre líneas, de las que notan y perciben cosas, lo dije es una gran lectora viaja a las paginas cada vez que puede, es de las que puede entender lo que no se dice. Y quizás, solo quizás, algo en su interior escuchó lo que nunca pude pronunciar en voz alta, aunque se preguntaran pero ¿por que no solo le dices lo que sientes o lo que piensas? bueno es una muy buena pregunta de hecho y la respuesta es no lo se, es que si tan solo pudiera, yo quiero decirle tantas cosas, tanto que tengo guardado desde hace dos años pero que no se como, no se expresarlo, si pudiera decir cual es mi mayor miedo seria perderla.',
+  'Y el porque me da tanto miedo perderla pues, recuerdas que hace poco dije que hay muchos mundos y situaciones en el anime que parecian imposibles que alguna vez pasaran, pues eso imposible que nunca imagine que algun dia pasara esas escenas que pasan que las vidas de los personajes cambian y se vuelven mas vividas porque alguien llega y los hacen felices bueno eso me paso a mi solo que mucho mejor, y fue gracias a Aby.La verdad es que lo unico que quiero es verla bien, que estuviera con su bella sonrisa siempre. Quería que cuando llegara cansada a casa después de su trabajo, hubiera algo bonito esperándola. Quería que cuando sintiera que todo estaba a punto de colapsar, recordara que alguien en este mismo mundo, en este pequeño pueblo, pensaba en ella todos los días deseandole y pidiendole a Dios a diario por su felicidad.',
+  'Asi que un dia entre tantas cosas que pueden cruzarse en mi mente con la no tan agradable habilidad de sobrepensar, surgio una idea que si que era muy buena y linda y que tal vez serviria para animarla asi sea un poquito, Construirle un universo solo para ella. Claro para mi superheroina que tanto he admirado y querido  claro que merecia eso y mucho más. Asi que solo me ponia a pensar dia a dia a recordar, recolectar cada  uno de sus increibles gustos — asi que empezo con las estrellas, porque mi Aby es una hermosa constelación, con tanta grandeza, con tantas cosas hermosas con su talento natural por ser única que nadie podria igualarla, acompaño esas estrellas con música sonando al primer toque, una melodia con tanto sentimiento que solo queria que llegara a su corazon y su mente,',
+  'Una melodia que representa como ha hecho sonar mi vida desde que llego, la hizo sentir tan linda tan diferente a todo lo que alguna vez pude llegar a sentir,  con un piano para sus dedos ya que esta aprendiendo uno de los instrumentos mas bellos para que pudiera llevarlo con ella a donde quisiera, y estaban las palabras que eran demasiadas y que muchas veces he callado por no saber como decir como expresar, pero que la verdad nunca alcanzarian las palabras, podria hablarle toda la vida y nunca terminaria de contemplarla además es mejor que le muestre un pequeño reflejo de quién es, de lo que va a hacer y lo agradecido y feliz que hizo a este personaje que esta para ella siempre.',
+  'Y en ese universo, una noche de abril, haria un juramento.',
+  'Aunque un dia se lo dire en voz alta, Lo escribi en el único idioma que sabía que ella entendería <em style="color:var(--rose)">el del corazón</em>.',
+  'El juramento decía algo que cambiaba todo. Algo que no tenía fecha de vencimiento. Algo que era, simplemente, <strong style="color:var(--gold);font-weight:400">la verdad más honesta que he sentido en mi vida</strong>.',
+  'Aby lo leyó.',
+  'Y lo supo...',
+];
+const sBox=document.getElementById('storyBox');
+const sEnd=document.getElementById('storyEndNote');
+const oBtn=document.getElementById('oathBtn');
+storyParas.forEach((p,i)=>{const d=document.createElement('p');d.className='story-para';d.innerHTML=p;d.style.transitionDelay=(i*.05)+'s';sBox.appendChild(d);});
+const sObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});},{threshold:.12});
+document.querySelectorAll('.story-para').forEach(p=>sObs.observe(p));
+// Story image
+const storyImg=document.getElementById('storyImg');
+if(storyImg)new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});},{threshold:.1}).observe(storyImg);
+const lastP=sBox.querySelector('.story-para:last-child');
+new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){setTimeout(()=>sEnd.classList.add('vis'),400);setTimeout(()=>oBtn.classList.add('show'),1300);}});},{threshold:.9}).observe(lastP);
+BC(oBtn);
+
+ 
+// ── OATH ──
+const oModal=document.getElementById('oathModal'),oText=document.getElementById('oathText'),oClose=document.getElementById('oathClose');
+oText.innerHTML=`Yo, Josh, juro hoy y siempre:<br><br>Que nunca te voy a abandonar, mi reina hermosa Aby. Que cuando esten pasando muchas cosas en tu mundo y sea demasiado y sientas que no puedes controlarlo, voy a estar ahí — sin que tengas que pedirlo, sin condiciones,  sin ni siquiera fecha de vencimiento, este juramento sera eterno, ya sabes que estaremos hasta viejitos.<br><br>asi que voy a proteger tu universo como si fuera el mío, asi que cada vez que estés cansada y sientas que no puedes más, voy a recordarte todo lo que eres asi como este pequeño recordatorio que te hago aqui hoy — asi que nunca pero nunca olvides esto.<br><br> Me importas de una manera que no sé bien cómo explicar, pero que construí un mundo para que lo sintieras sin que tuviera que decirlo con palabras.<br><br>ya que admiro cada parte de ti, tus manos super magicas, tus ojos en tu mirar hay mucha profundidad, tu silencio que dice más que cualquier discurso, tu risa y tu sonrisa que no puede haber nada igual ni mas bello, tu manera de amar lo que amas con todo — el anime, los libros, las películas, el piano, la vida, tu fe.<br><br> sinceramente a mi me hace feliz verte feliz. Y que, si algún día me lo permites, haré lo que sea para que esa felicidad sea tuya siempre, mira se que no podemos saber nuestro futuro y eso a veces da miedo mucho miedo la incertidumbre y tantos escenarios tantas cosas que pueden pasar pero lo que estoy seguro es que ya no tengo miedo Tengo a Dios, a mi familia y a ti, osea no podria pedir mas, <br><br> Y si podria decir que antes de que llegaras tambien podia hacer cosas pero la diferencia es que al tu llegar lo cambiaste todo, diste tu toque especial, tu magia, me diste a mi que estaba con un vacio en su interior y haciendo las cosas con la monotonia y la rutina me diste tu alegria, tus gustos, me diste a alguien a quien admirar, la verdad no habia conocido a alguien mejor que tu y se que nunca lo hallare, tu no tienes comparación porque tu eres diferente y tu puedes con todo que no se te olvide nunca, otro de tantos recordatorios que te hago,<br><br>  Por esto por todo esto por quien eres, por lo que haces, por todo el complemento que te hace tu es que tanto te quiero, que tanto tengo miedo de perder todo el tiempo, y se que podra parecer muy repetitivo, pero aún asi lo repetire siempre y es que perderte a ti seria algo muy doloroso, seria algo que no podria aguantar tu me sacaste de mi vacio, tu eres la luz, eres mi luz y mi faro,<br><br> Cada dia que pasaba que conocia algo mas de ti no podia ser más feliz y la verdad se que me faltan muchas cosas de ti por conocer y la verdad estaria encantado de hacerlo pero lo hare a tu tiempo cuando estes lista y quieras contarme al final siempre sere como un loquito seria el loco del muelle de San Blas te esperaria toda la vida, porque tu eres un valioso tesoro y contigo cerca se que las cosas solo son mas lindas.<br><br><em style="color:var(--gold)">Tu universo es una maravilla, Aby.</em> Y yo no paro de admirarlo.`;
+oBtn.addEventListener('click',()=>{oModal.classList.add('open');document.body.style.overflow='hidden';startBG();});
+function closeOath(){oModal.classList.remove('open');document.body.style.overflow='';}
+oClose.addEventListener('click',closeOath);BC(oClose);
+oModal.addEventListener('click',e=>{if(e.target===oModal)closeOath();});
+ 
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeUModal();closeJModal();closeOath();}});
+ 
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.08});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
+// ── FINAL BUTTON ──
+const finalBtn=document.getElementById('finalBtn');
+const finalModal=document.getElementById('finalModal');
+const fmClose=document.getElementById('fmClose');
+BC(finalBtn);
+finalBtn.addEventListener('click',()=>{
+  finalModal.classList.add('open');
+  document.body.style.overflow='hidden';
+  startBG();
+  // Extra fireworks for the final moment
+  for(let i=0;i<5;i++){
+    setTimeout(()=>{
+      launchHFW(Math.random()*window.innerWidth, Math.random()*window.innerHeight*.5);
+    }, i*200);
+  }
+});
+fmClose.addEventListener('click',()=>{finalModal.classList.remove('open');document.body.style.overflow='';});BC(fmClose);
+finalModal.addEventListener('click',e=>{if(e.target===finalModal){finalModal.classList.remove('open');document.body.style.overflow='';}});
+ 
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeUModal();closeJModal();closeOath();finalModal.classList.remove('open');document.body.style.overflow='';}});
+</script>
+</body>
+</html>
